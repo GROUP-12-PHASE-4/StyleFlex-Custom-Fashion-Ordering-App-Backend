@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Order, Design, User
 from database import db
-from utils import admin_required  
+from utils import admin_required
 
 order_bp = Blueprint("order_bp", __name__)
 
@@ -18,7 +18,6 @@ def get_orders():
         orders = Order.query.filter_by(user_id=current_user_id).all()
 
     return jsonify([order.to_dict() for order in orders]), 200
-
 
 @order_bp.route("/orders", methods=["POST"])
 @jwt_required()

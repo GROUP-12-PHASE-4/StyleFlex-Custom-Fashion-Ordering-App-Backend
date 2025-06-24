@@ -2,21 +2,20 @@ from app import app
 from database import db
 from models import User
 
-def seed_admin():
-    with app.app_context():
-        if User.query.filter_by(username="admin").first():
-            print("⚠️ Admin user already exists.")
-            return
+with app.app_context():
+    username = "adminuser"
+    email = "admin@example.com"
+    password = "adminpassword"
 
-        admin = User(
-            username="admin",
-            email="admin@example.com",
-            is_admin=True
-        )
-        admin.set_password("admin123")
+    existing_user = User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first()
+
+    if existing_user:
+        print(f"ℹ️ A user with username '{username}' or email '{email}' already exists.")
+    else:
+        admin = User(username=username, email=email, is_admin=True)
+        admin.set_password(password)
         db.session.add(admin)
         db.session.commit()
-        print("✅ Admin user created.")
-
-if __name__ == "__main__":
-    seed_admin()
+        print(f"✅ Admin user '{username}' created successfully.")
