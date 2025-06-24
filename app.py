@@ -15,7 +15,7 @@ print("✅ Imported db")
 from routes import auth_bp
 print("✅ Imported auth_bp")
 
-from config.config import Configonfig
+from config.config import Config
 print("✅ Imported Config")
 
 
