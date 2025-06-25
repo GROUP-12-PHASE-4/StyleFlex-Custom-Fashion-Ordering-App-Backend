@@ -39,8 +39,8 @@ CORS(app)
 print("✅ CORS initialized")
 
 app.register_blueprint(auth_bp, url_prefix="/api")
-app.register_blueprint(designs_bp, url_prefix="/api/designs")
-app.register_blueprint(orders_bp, url_prefix="/api/orders")
+app.register_blueprint(designs_bp, url_prefix="/api")
+app.register_blueprint(orders_bp, url_prefix="/api")
 print("✅ All Blueprints registered")
 
 def create_app():

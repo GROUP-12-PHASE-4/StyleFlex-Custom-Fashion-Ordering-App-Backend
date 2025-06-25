@@ -1,6 +1,7 @@
 from database import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import json
 
 class User(db.Model):
     __tablename__ = "users"
@@ -9,7 +10,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False) 
+    is_admin = db.Column(db.Boolean, default=False)
 
     orders = db.relationship("Order", backref="user", lazy=True)
 
@@ -18,6 +19,9 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
 
 
 class Design(db.Model):
@@ -40,6 +44,9 @@ class Design(db.Model):
             "category": self.category
         }
 
+    def __repr__(self):
+        return f"<Design {self.title}>"
+
 
 class Order(db.Model):
     __tablename__ = "orders"
@@ -48,7 +55,7 @@ class Order(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     design_id = db.Column(db.Integer, db.ForeignKey('designs.id'), nullable=False)
     size = db.Column(db.String(20), nullable=True)
-    measurements = db.Column(db.Text, nullable=True)
+    measurements = db.Column(db.Text, nullable=True) 
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -58,8 +65,11 @@ class Order(db.Model):
             "user_id": self.user_id,
             "design_id": self.design_id,
             "size": self.size,
-            "measurements": self.measurements,
+            "measurements": json.loads(self.measurements) if self.measurements else None,
             "status": self.status,
             "created_at": self.created_at.isoformat(),
             "design": self.design.to_dict() if self.design else None
         }
+
+    def __repr__(self):
+        return f"<Order {self.id} - User {self.user_id}>"

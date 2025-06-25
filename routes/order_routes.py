@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Order, Design, User
 from database import db
 from utils import admin_required
+import json
 
 order_bp = Blueprint("order_bp", __name__)
 
@@ -29,7 +30,7 @@ def create_order():
         user_id=current_user_id,
         design_id=data["design_id"],
         size=data.get("size"),
-        measurements=data.get("measurements"),
+        measurements=json.dumps(data.get("measurements")) if data.get("measurements") else None,
     )
     db.session.add(new_order)
     db.session.commit()
