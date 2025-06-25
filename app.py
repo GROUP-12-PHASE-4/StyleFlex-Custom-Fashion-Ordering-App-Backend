@@ -19,7 +19,7 @@ print("✅ Imported auth_bp, designs_bp, and orders_bp")
 from config.config import Config
 print("✅ Imported Config")
 
-from models import User 
+from models import User
 print("✅ Imported User model")
 
 app = Flask(__name__)
@@ -42,6 +42,11 @@ app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(designs_bp, url_prefix="/api")
 app.register_blueprint(orders_bp, url_prefix="/api")
 print("✅ All Blueprints registered")
+
+
+@app.route('/')
+def index():
+    return {"message": "StyleFlex API is running 🚀"}, 200
 
 def create_app():
     return app
