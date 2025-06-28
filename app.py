@@ -19,8 +19,8 @@ print("✅ Imported auth_bp, designs_bp, and orders_bp")
 from config.config import Config
 print("✅ Imported Config")
 
-from models import User 
-print("✅ Imported User model")
+from models import User, Design, Order 
+print("✅ Imported User, Design, and Order models")
 
 app = Flask(__name__)
 app.config.from_object(Config)
