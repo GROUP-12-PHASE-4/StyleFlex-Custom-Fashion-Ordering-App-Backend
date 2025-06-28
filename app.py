@@ -19,7 +19,7 @@ print("✅ Imported auth_bp, designs_bp, and orders_bp")
 from config.config import Config
 print("✅ Imported Config")
 
-from models import User
+from models import User 
 print("✅ Imported User model")
 
 app = Flask(__name__)
@@ -29,14 +29,25 @@ print("⚙️ Config loaded")
 db.init_app(app)
 print("✅ db.init_app(app) complete")
 
+
 migrate = Migrate(app, db)
 print("✅ Migrate initialized")
+
 
 JWTManager(app)
 print("✅ JWTManager initialized")
 
-CORS(app)
-print("✅ CORS initialized")
+
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "https://styleflex-frontend.vercel.app"
+        ]
+    }
+})
+print("✅ CORS initialized with allowed origins")
+
 
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(designs_bp, url_prefix="/api")
@@ -47,6 +58,7 @@ print("✅ All Blueprints registered")
 @app.route('/')
 def index():
     return {"message": "StyleFlex API is running 🚀"}, 200
+
 
 def create_app():
     return app
