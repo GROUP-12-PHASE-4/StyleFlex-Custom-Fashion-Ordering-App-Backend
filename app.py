@@ -29,36 +29,33 @@ print("⚙️ Config loaded")
 db.init_app(app)
 print("✅ db.init_app(app) complete")
 
-
 migrate = Migrate(app, db)
 print("✅ Migrate initialized")
 
-
 JWTManager(app)
 print("✅ JWTManager initialized")
-
 
 CORS(app, resources={
     r"/api/*": {
         "origins": [
             "http://localhost:3000",
             "https://styleflex-frontend.vercel.app"
-        ]
+        ],
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }
 })
-print("✅ CORS initialized with allowed origins")
-
+print("✅ CORS initialized with extended headers and credentials support")
 
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(designs_bp, url_prefix="/api")
 app.register_blueprint(orders_bp, url_prefix="/api")
 print("✅ All Blueprints registered")
 
-
 @app.route('/')
 def index():
     return {"message": "StyleFlex API is running 🚀"}, 200
-
 
 def create_app():
     return app
