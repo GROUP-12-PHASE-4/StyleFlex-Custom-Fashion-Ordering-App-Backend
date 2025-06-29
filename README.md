@@ -2,11 +2,11 @@
 This is the backend for the StyleFlex Custom Fashion Ordeing App..It provides RESTful API endpoints for user authentication, managing designs, handling orders,and user profiles.
 
 ## FEATURES
--User Authentication(JWT)
--CRUD for fashion designs 
--Create and track orders
--Admin-ONly Routes for mananging orders
--Profile update support 
+- User Authentication(JWT)
+- CRUD for fashion designs 
+- Create and track orders
+- Admin-ONly Routes for mananging orders
+- Profile update support 
 
 ## TECH STACK
 - Python 3.11+
