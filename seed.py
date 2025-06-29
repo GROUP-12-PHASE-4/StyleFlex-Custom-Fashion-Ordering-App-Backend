@@ -13,7 +13,7 @@ with app.app_context():
     admin.set_password("admin123")
 
 
-    user = User(username="john", email="john@example.com")
+    user = User(username="bill", email="bill@example.com")
     user.set_password("password123")
 
     design1 = Design(
