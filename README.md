@@ -74,5 +74,38 @@ MIT © 2025 StyleFlex
 - STACEY TAREI
 - LEWIS
 
+## PROJECT STRUCTURE
+``` plaintext
+styleflex-backend/
+├── __pycache__/                 # Compiled Python cache
+├── config/                      # Configuration files (if used)
+├── instance/
+│   └── styleflex.db             # SQLite database file (local)
+├── migrations/                 # Alembic migrations
+│   ├── versions/                # Auto-generated migration scripts
+│   ├── alembic.ini              # Alembic config
+│   ├── env.py
+│   └── script.py.mako
+├── routes/                      # Flask Blueprints for different routes
+│   ├── __init__.py
+│   ├── auth_routes.py
+│   ├── design_routes.py
+│   └── order_routes.py
+├── venv/                        # Python virtual environment
+├── .env                         # Environment variables
+├── app.py                       # App entry point
+├── database.py                  # Database setup logic
+├── init_db.py                   # Initial database setup
+├── models.py                    # SQLAlchemy models
+├── Procfile                     # For deploying to Render
+├── README.md                    # Project documentation
+├── requirements.txt             # Python dependencies
+├── routes.py                    # Optional unified route registration
+├── seed.py                      # Script to seed data
+├── seed_admin.py                # Admin seeding script
+├── styleflex.db                 # (Duplicate?) DB file — cleanup if needed
+└── utils.py                     # Helper functions
+
+
 
 
