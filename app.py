@@ -38,7 +38,7 @@ print("✅ JWTManager initialized")
 CORS(app, resources={
     r"/api/*": {
         "origins": [
-            "http://localhost:3000",
+            "http://localhost:3001",
             "https://styleflex-frontend.vercel.app"
         ],
         "supports_credentials": True,
