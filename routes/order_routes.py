@@ -20,6 +20,7 @@ def get_orders():
 
     return jsonify([order.to_dict() for order in orders]), 200
 
+
 @order_bp.route("/orders", methods=["POST"])
 @jwt_required()
 def create_order():
@@ -36,6 +37,7 @@ def create_order():
     db.session.commit()
     return jsonify(new_order.to_dict()), 201
 
+
 @order_bp.route("/orders/<int:id>", methods=["PUT"])
 @jwt_required()
 @admin_required
@@ -46,6 +48,7 @@ def update_order(id):
     db.session.commit()
     return jsonify(order.to_dict()), 200
 
+
 @order_bp.route("/orders/<int:id>", methods=["DELETE"])
 @jwt_required()
 @admin_required
@@ -54,5 +57,31 @@ def delete_order(id):
     db.session.delete(order)
     db.session.commit()
     return jsonify({"message": "Order deleted"}), 200
+
+
+
+@order_bp.route("/orders/<int:id>/offer", methods=["POST"])
+@jwt_required()
+def make_offer(id):
+    order = Order.query.get_or_404(id)
+    data = request.get_json()
+    offer_price = data.get("offer_price")
+    notes = data.get("notes")
+
+    if not offer_price:
+        return jsonify({"message": "Offer price is required"}), 400
+
+   
+    offer_data = {
+        "offer_price": offer_price,
+        "notes": notes,
+        "tailor_id": get_jwt_identity(),
+    }
+
+    order.offer = json.dumps(offer_data)
+    db.session.commit()
+
+    return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
+
 
 orders_bp = order_bp

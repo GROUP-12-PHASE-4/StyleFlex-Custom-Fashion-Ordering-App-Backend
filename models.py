@@ -57,6 +57,7 @@ class Order(db.Model):
     size = db.Column(db.String(20), nullable=True)
     measurements = db.Column(db.Text, nullable=True) 
     status = db.Column(db.String(20), default='pending')
+    offer = db.Column(db.Text, nullable=True)  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -67,6 +68,7 @@ class Order(db.Model):
             "size": self.size,
             "measurements": json.loads(self.measurements) if self.measurements else None,
             "status": self.status,
+            "offer": json.loads(self.offer) if self.offer else None,  
             "created_at": self.created_at.isoformat(),
             "design": self.design.to_dict() if self.design else None
         }
