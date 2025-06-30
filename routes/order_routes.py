@@ -9,7 +9,6 @@ from flask_cors import cross_origin
 
 order_bp = Blueprint("order_bp", __name__)
 
-
 @order_bp.after_request
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -17,7 +16,8 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     return response
 
-@order_bp.route("/orders", methods=["GET", "OPTIONS"])
+# ✅ GET /api/orders
+@order_bp.route("/", methods=["GET", "OPTIONS"])
 @jwt_required()
 @cross_origin()
 def get_orders():
@@ -34,8 +34,8 @@ def get_orders():
 
     return jsonify([order.to_dict() for order in orders]), 200
 
-
-@order_bp.route("/orders", methods=["POST", "OPTIONS"])
+# ✅ POST /api/orders
+@order_bp.route("/", methods=["POST", "OPTIONS"])
 @jwt_required()
 @cross_origin()
 def create_order():
@@ -55,8 +55,8 @@ def create_order():
     db.session.commit()
     return jsonify(new_order.to_dict()), 201
 
-
-@order_bp.route("/orders/<int:id>", methods=["PUT", "OPTIONS"])
+# ✅ PUT /api/orders/<id>
+@order_bp.route("/<int:id>", methods=["PUT", "OPTIONS"])
 @jwt_required()
 @admin_required
 @cross_origin()
@@ -70,8 +70,8 @@ def update_order(id):
     db.session.commit()
     return jsonify(order.to_dict()), 200
 
-
-@order_bp.route("/orders/<int:id>", methods=["DELETE", "OPTIONS"])
+# ✅ DELETE /api/orders/<id>
+@order_bp.route("/<int:id>", methods=["DELETE", "OPTIONS"])
 @jwt_required()
 @admin_required
 @cross_origin()
@@ -84,8 +84,8 @@ def delete_order(id):
     db.session.commit()
     return jsonify({"message": "Order deleted"}), 200
 
-
-@order_bp.route("/orders/<int:id>/offer", methods=["POST", "OPTIONS"])
+# ✅ POST /api/orders/<id>/offer
+@order_bp.route("/<int:id>/offer", methods=["POST", "OPTIONS"])
 @jwt_required()
 @cross_origin()
 def make_offer(id):
@@ -111,5 +111,5 @@ def make_offer(id):
 
     return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
 
-
+# Export
 orders_bp = order_bp
