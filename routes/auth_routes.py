@@ -10,19 +10,23 @@ from flask_jwt_extended import (
 from flask_cors import cross_origin
 
 auth_bp = Blueprint('auth', __name__)
+ALLOWED_ORIGINS = ["http://localhost:3000", "https://styleflex-frontend.vercel.app"]
 
-@auth_bp.route('/register', methods=['POST'])
-@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
+# ======================
+# Register
+# ======================
+@auth_bp.route('/register', methods=['POST', 'OPTIONS'])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def register():
+    if request.method == "OPTIONS":
+        return '', 200
+
     data = request.get_json()
 
     if User.query.filter_by(username=data['username']).first():
         return jsonify({"message": "Username already exists"}), 409
 
-    user = User(
-        username=data['username'],
-        email=data['email']
-    )
+    user = User(username=data['username'], email=data['email'])
     user.set_password(data['password'])
 
     db.session.add(user)
@@ -30,9 +34,15 @@ def register():
 
     return jsonify({"message": "User registered successfully"}), 201
 
-@auth_bp.route('/login', methods=['POST'])
-@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
+# ======================
+# Login
+# ======================
+@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def login():
+    if request.method == "OPTIONS":
+        return '', 200
+
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
 
@@ -47,19 +57,30 @@ def login():
 
     return jsonify({"message": "Invalid credentials"}), 401
 
-
-@auth_bp.route('/refresh', methods=['POST'])
+# ======================
+# Refresh Token
+# ======================
+@auth_bp.route('/refresh', methods=['POST', 'OPTIONS'])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required(refresh=True)
-@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def refresh():
+    if request.method == "OPTIONS":
+        return '', 200
+
     identity = get_jwt_identity()
     new_access_token = create_access_token(identity=identity)
     return jsonify(access_token=new_access_token), 200
 
-@auth_bp.route('/profile', methods=['GET'])
+# ======================
+# Get Profile
+# ======================
+@auth_bp.route('/profile', methods=['GET', 'OPTIONS'])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
-@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def profile():
+    if request.method == "OPTIONS":
+        return '', 200
+
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
     if not user:
@@ -71,10 +92,16 @@ def profile():
         "email": user.email
     }), 200
 
-@auth_bp.route('/profile', methods=['PUT'])
+# ======================
+# Update Profile
+# ======================
+@auth_bp.route('/profile', methods=['PUT', 'OPTIONS'])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
-@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def update_profile():
+    if request.method == "OPTIONS":
+        return '', 200
+
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
     if not user:
