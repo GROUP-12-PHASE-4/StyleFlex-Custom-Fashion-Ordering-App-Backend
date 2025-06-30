@@ -8,17 +8,14 @@ import json
 
 order_bp = Blueprint("order_bp", __name__)
 
-# Handle CORS preflight requests (OPTIONS) for /orders
-@order_bp.route("/orders", methods=["OPTIONS"])
-@cross_origin()
-def orders_options():
-    return '', 200
-
-# GET /orders - fetch orders
-@order_bp.route("/orders", methods=["GET"])
-@jwt_required()
+# ---- GET /orders ----
+@order_bp.route("/orders", methods=["GET", "OPTIONS"])
 @cross_origin()
 def get_orders():
+    if request.method == "OPTIONS":
+        return '', 200
+
+    jwt_required()
     current_user_id = get_jwt_identity()
     user = User.query.get_or_404(current_user_id)
 
@@ -29,17 +26,14 @@ def get_orders():
 
     return jsonify([order.to_dict() for order in orders]), 200
 
-# Handle OPTIONS preflight for POST
-@order_bp.route("/orders", methods=["OPTIONS"])
-@cross_origin()
-def create_order_options():
-    return '', 200
-
-# POST /orders - create new order
-@order_bp.route("/orders", methods=["POST"])
-@jwt_required()
+# ---- POST /orders ----
+@order_bp.route("/orders", methods=["POST", "OPTIONS"])
 @cross_origin()
 def create_order():
+    if request.method == "OPTIONS":
+        return '', 200
+
+    jwt_required()
     data = request.get_json()
     current_user_id = get_jwt_identity()
 
@@ -53,52 +47,46 @@ def create_order():
     db.session.commit()
     return jsonify(new_order.to_dict()), 201
 
-# OPTIONS for PUT
-@order_bp.route("/orders/<int:id>", methods=["OPTIONS"])
-@cross_origin()
-def update_order_options(id):
-    return '', 200
-
-# PUT /orders/<id> - update order status
-@order_bp.route("/orders/<int:id>", methods=["PUT"])
-@jwt_required()
-@admin_required
+# ---- PUT /orders/<id> ----
+@order_bp.route("/orders/<int:id>", methods=["PUT", "OPTIONS"])
 @cross_origin()
 def update_order(id):
+    if request.method == "OPTIONS":
+        return '', 200
+
+    jwt_required()
+    admin_required()
+
     order = Order.query.get_or_404(id)
     data = request.get_json()
     order.status = data.get("status", order.status)
     db.session.commit()
     return jsonify(order.to_dict()), 200
 
-# OPTIONS for DELETE
-@order_bp.route("/orders/<int:id>", methods=["OPTIONS"])
-@cross_origin()
-def delete_order_options(id):
-    return '', 200
-
-# DELETE /orders/<id> - delete order
-@order_bp.route("/orders/<int:id>", methods=["DELETE"])
-@jwt_required()
-@admin_required
+# ---- DELETE /orders/<id> ----
+@order_bp.route("/orders/<int:id>", methods=["DELETE", "OPTIONS"])
 @cross_origin()
 def delete_order(id):
+    if request.method == "OPTIONS":
+        return '', 200
+
+    jwt_required()
+    admin_required()
+
     order = Order.query.get_or_404(id)
     db.session.delete(order)
     db.session.commit()
     return jsonify({"message": "Order deleted"}), 200
 
-# OPTIONS for /offer
-@order_bp.route("/orders/<int:id>/offer", methods=["OPTIONS"])
-@cross_origin()
-def offer_options(id):
-    return '', 200
-
-# POST /orders/<id>/offer - tailor makes offer
-@order_bp.route("/orders/<int:id>/offer", methods=["POST"])
-@jwt_required()
+# ---- POST /orders/<id>/offer ----
+@order_bp.route("/orders/<int:id>/offer", methods=["POST", "OPTIONS"])
 @cross_origin()
 def make_offer(id):
+    if request.method == "OPTIONS":
+        return '', 200
+
+    jwt_required()
+
     order = Order.query.get_or_404(id)
     data = request.get_json()
     offer_price = data.get("offer_price")
@@ -118,5 +106,5 @@ def make_offer(id):
 
     return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
 
-# Export blueprint
+# Export
 orders_bp = order_bp
