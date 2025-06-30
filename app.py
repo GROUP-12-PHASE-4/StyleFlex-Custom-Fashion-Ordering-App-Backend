@@ -19,7 +19,7 @@ print("✅ Imported auth_bp, designs_bp, and orders_bp")
 from config.config import Config
 print("✅ Imported Config")
 
-from models import User, Design, Order 
+from models import User, Design, Order
 print("✅ Imported User, Design, and Order models")
 
 app = Flask(__name__)
@@ -35,20 +35,19 @@ print("✅ Migrate initialized")
 JWTManager(app)
 print("✅ JWTManager initialized")
 
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:3000",
-            "https://styleflex-frontend.vercel.app"
-        ],
-        "supports_credentials": True,
-        "allow_headers": ["Content-Type", "Authorization"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    }
-})
-print("✅ CORS initialized with extended headers and credentials support")
+CORS(
+    app,
+    supports_credentials=True,
+    origins=[
+        "http://localhost:3000",
+        "https://styleflex-frontend.vercel.app"
+    ],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
+)
+print("✅ CORS initialized with credentials support")
 
-# ✅ Fixed Blueprint prefixes
+
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(designs_bp, url_prefix="/api/designs")
 app.register_blueprint(orders_bp, url_prefix="/api/orders")

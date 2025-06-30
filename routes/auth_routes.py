@@ -7,12 +7,15 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
+from flask_cors import cross_origin
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
+@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def register():
     data = request.get_json()
+
     if User.query.filter_by(username=data['username']).first():
         return jsonify({"message": "Username already exists"}), 409
 
@@ -24,9 +27,11 @@ def register():
 
     db.session.add(user)
     db.session.commit()
+
     return jsonify({"message": "User registered successfully"}), 201
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
@@ -34,13 +39,18 @@ def login():
     if user and user.check_password(data['password']):
         access_token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
-        return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+        return jsonify(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user={"id": user.id, "username": user.username, "email": user.email}
+        ), 200
 
     return jsonify({"message": "Invalid credentials"}), 401
 
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
+@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def refresh():
     identity = get_jwt_identity()
     new_access_token = create_access_token(identity=identity)
@@ -48,9 +58,13 @@ def refresh():
 
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
+@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def profile():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
     return jsonify({
         "id": user.id,
         "username": user.username,
@@ -59,10 +73,10 @@ def profile():
 
 @auth_bp.route('/profile', methods=['PUT'])
 @jwt_required()
+@cross_origin(origins=["http://localhost:3000", "https://styleflex-frontend.vercel.app"], supports_credentials=True)
 def update_profile():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
-
     if not user:
         return jsonify({"message": "User not found"}), 404
 
