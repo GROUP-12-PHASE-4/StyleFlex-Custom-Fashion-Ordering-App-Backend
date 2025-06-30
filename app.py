@@ -1,59 +1,48 @@
 from flask import Flask
-print("✅ Imported Flask")
-
 from flask_jwt_extended import JWTManager
-print("✅ Imported JWTManager")
-
 from flask_cors import CORS
-print("✅ Imported CORS")
-
 from flask_migrate import Migrate
-print("✅ Imported Migrate")
 
 from database import db
-print("✅ Imported db")
-
 from routes import auth_bp, designs_bp, orders_bp
-print("✅ Imported auth_bp, designs_bp, and orders_bp")
-
 from config.config import Config
-print("✅ Imported Config")
-
 from models import User, Design, Order
-print("✅ Imported User, Design, and Order models")
+
+print("✅ All modules imported")
 
 app = Flask(__name__)
 app.config.from_object(Config)
 print("⚙️ Config loaded")
 
-db.init_app(app)
-print("✅ db.init_app(app) complete")
-
-migrate = Migrate(app, db)
-print("✅ Migrate initialized")
-
-JWTManager(app)
-print("✅ JWTManager initialized")
-
+# ✅ Apply CORS immediately
 CORS(
     app,
-    supports_credentials=True,
-    origins=[
+    resources={r"/api/*": {"origins": [
         "http://localhost:3000",
         "https://styleflex-frontend.vercel.app"
-    ],
+    ]}},
+    supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"]
 )
-print("✅ CORS initialized with credentials support")
+print("✅ CORS initialized")
 
+db.init_app(app)
+print("✅ Database initialized")
 
+migrate = Migrate(app, db)
+print("✅ Migrations setup")
+
+JWTManager(app)
+print("✅ JWT Manager setup")
+
+# ✅ Register blueprints
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(designs_bp, url_prefix="/api/designs")
 app.register_blueprint(orders_bp, url_prefix="/api/orders")
-print("✅ All Blueprints registered with proper prefixes")
+print("✅ Blueprints registered")
 
-@app.route('/')
+@app.route("/")
 def index():
     return {"message": "StyleFlex API is running 🚀"}, 200
 
@@ -61,5 +50,5 @@ def create_app():
     return app
 
 if __name__ == "__main__":
-    print("🧪 Running app directly...")
+    print("🧪 Running in development mode")
     app.run(debug=True)
