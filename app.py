@@ -48,10 +48,11 @@ CORS(app, resources={
 })
 print("✅ CORS initialized with extended headers and credentials support")
 
-app.register_blueprint(auth_bp, url_prefix="/api")
-app.register_blueprint(designs_bp, url_prefix="/api")
-app.register_blueprint(orders_bp, url_prefix="/api")
-print("✅ All Blueprints registered")
+# ✅ Fixed Blueprint prefixes
+app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(designs_bp, url_prefix="/api/designs")
+app.register_blueprint(orders_bp, url_prefix="/api/orders")
+print("✅ All Blueprints registered with proper prefixes")
 
 @app.route('/')
 def index():
