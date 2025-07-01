@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import json
 
+
 class User(db.Model):
     __tablename__ = "users"
 
@@ -29,9 +30,9 @@ class Design(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    image = db.Column(db.String, nullable=True)
-    category = db.Column(db.String(50), nullable=True)
+    description = db.Column(db.Text)
+    image = db.Column(db.String)
+    category = db.Column(db.String(50))
 
     orders = db.relationship("Order", backref="design", lazy=True)
 
@@ -52,12 +53,12 @@ class Order(db.Model):
     __tablename__ = "orders"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    design_id = db.Column(db.Integer, db.ForeignKey('designs.id'), nullable=False)
-    size = db.Column(db.String(20), nullable=True)
-    measurements = db.Column(db.Text, nullable=True) 
-    status = db.Column(db.String(20), default='pending')
-    offer = db.Column(db.Text, nullable=True)  
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    design_id = db.Column(db.Integer, db.ForeignKey("designs.id"), nullable=False)
+    size = db.Column(db.String(20))
+    measurements = db.Column(db.Text)  # Stored as JSON string
+    status = db.Column(db.String(20), default="pending")
+    offer = db.Column(db.Text)  # Stored as JSON string
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -66,12 +67,18 @@ class Order(db.Model):
             "user_id": self.user_id,
             "design_id": self.design_id,
             "size": self.size,
-            "measurements": json.loads(self.measurements) if self.measurements else None,
+            "measurements": self._safe_json(self.measurements),
             "status": self.status,
-            "offer": json.loads(self.offer) if self.offer else None,  
+            "offer": self._safe_json(self.offer),
             "created_at": self.created_at.isoformat(),
             "design": self.design.to_dict() if self.design else None
         }
+
+    def _safe_json(self, field):
+        try:
+            return json.loads(field) if field else None
+        except (ValueError, TypeError):
+            return None
 
     def __repr__(self):
         return f"<Order {self.id} - User {self.user_id}>"
