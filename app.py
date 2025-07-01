@@ -12,6 +12,10 @@ print("✅ All modules imported")
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# ✅ Allow both trailing and non-trailing slashes in routes
+app.url_map.strict_slashes = False
+
 print("⚙️ Config loaded")
 
 # ✅ Apply CORS to the app
@@ -21,11 +25,13 @@ CORS(
         "http://localhost:3000",
         "https://styleflex-frontend.vercel.app"
     ]}},
-    supports_credentials=True
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
 )
 print("✅ CORS initialized")
 
-# ✅ Global CORS headers for all responses
+# ✅ Apply global CORS headers for all responses
 @app.after_request
 def apply_cors_headers(response):
     origin = request.headers.get("Origin")
@@ -36,20 +42,28 @@ def apply_cors_headers(response):
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response
 
-# ✅ Preflight support to avoid 405s
+# ✅ Handle OPTIONS preflight requests explicitly
 @app.route('/api/<path:path>', methods=["OPTIONS"])
 def handle_options(path):
     return '', 200
 
-# ✅ Initialize database and extensions
+# ✅ Initialize DB
 db.init_app(app)
-migrate = Migrate(app, db)
-JWTManager(app)
+print("✅ Database initialized")
 
-# ✅ Register blueprints with correct prefixes
+# ✅ Set up Migrations
+migrate = Migrate(app, db)
+print("✅ Migrations setup")
+
+# ✅ JWT Setup
+JWTManager(app)
+print("✅ JWT Manager setup")
+
+# ✅ Register blueprints
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(designs_bp, url_prefix="/api/designs")
 app.register_blueprint(orders_bp, url_prefix="/api/orders")
+print("✅ Blueprints registered")
 
 @app.route("/")
 def index():
