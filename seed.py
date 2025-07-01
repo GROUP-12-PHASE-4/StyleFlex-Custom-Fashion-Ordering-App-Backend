@@ -7,7 +7,7 @@ app = create_app()
 with app.app_context():
     db.drop_all()
     db.create_all()
-    print("✅ Tables reset")
+    print("Tables reset")
 
     admin = User(username="admin", email="admin@example.com", is_admin=True)
     admin.set_password("admin123")
@@ -32,7 +32,7 @@ with app.app_context():
 
     db.session.add_all([admin, user, design1, design2])
     db.session.commit()
-    print("✅ Users and designs added")
+    print("Users and designs added")
 
 
     order1 = Order(
@@ -45,4 +45,4 @@ with app.app_context():
 
     db.session.add(order1)
     db.session.commit()
-    print("✅ Sample order added")
+    print("Sample order added")

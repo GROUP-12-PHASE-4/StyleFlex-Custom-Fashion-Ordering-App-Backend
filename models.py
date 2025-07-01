@@ -56,9 +56,9 @@ class Order(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     design_id = db.Column(db.Integer, db.ForeignKey("designs.id"), nullable=False)
     size = db.Column(db.String(20))
-    measurements = db.Column(db.Text)  # Stored as JSON string
+    measurements = db.Column(db.Text) 
     status = db.Column(db.String(20), default="pending")
-    offer = db.Column(db.Text)  # Stored as JSON string
+    offer = db.Column(db.Text)  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):

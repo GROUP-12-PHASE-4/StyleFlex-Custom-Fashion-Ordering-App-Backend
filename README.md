@@ -1,16 +1,16 @@
 # STYLEFLEX-BACKEND
-This is the backend for the StyleFlex Custom Fashion Ordeing App..It provides RESTful API endpoints for user authentication, managing designs, handling orders,and user profiles.
+This is the backend for the StyleFlex Custom Fashion Ordering App..It provides RESTful API endpoints for user authentication, managing designs, handling orders,and user profiles.
 
 ## FEATURES
 - User Authentication(JWT)
-- CRUD for fashion designs 
+- CRUD operations for fashion designs 
 - Create and track orders
-- Admin-ONly Routes for mananging orders
-- Profile update support 
+- Admin-only Routes for mananging orders
+- User profile update support 
 
 ## TECH STACK
 - Python 3.11+
-- flask 
+- Flask 
 - Flask-migrate
 - Flask-SQL-Alchemy
 - Flask-JWT-Extended
@@ -22,8 +22,8 @@ This is the backend for the StyleFlex Custom Fashion Ordeing App..It provides RE
 - cd styleflex-backend
 
 ### 2. Create and actiavte a virtual environment
-- python -m venv venv
-- source venv/bin/activate  # On Windows: venv\Scripts\activate
+- pipenv install
+- pipenv shell
 
 ### 3. Install Dependencies
 - pip install -r requirements.txt
@@ -44,13 +44,13 @@ This is the backend for the StyleFlex Custom Fashion Ordeing App..It provides RE
 - flask run
 
 ## AUTHENTICATION
-- POST/signup - Creates new user 
-- POST/login- Returns access token 
+- POST/auth/register- Creates new user 
+- POST/auth/login- Returns access token 
 - Use token in protected routes with:
 - Authorization: Bearer <your_token>
 
 
-## POSTGRESQL SETIP(LOCAL)
+## POSTGRESQL SETUP(LOCAL)
 createdb styleflex_db (make sure to match this with your DATABASE_URL)
 
 ## DEPLOYMENT
@@ -65,47 +65,36 @@ gunicorn app:app
 - JWT_SECRET_KEY=your-jwt-secret
 - DATABASE_URL=your-render-postgresql-url
 
-## LICENSE 
-MIT © 2025 StyleFlex
-
-## ACKNOWLEDGEMENTS
-- BILLY ADAMS
-- ELAINE BUYEKE
-- STACEY TAREI
-- LEWIS
 
 ## PROJECT STRUCTURE
 ``` plaintext
 styleflex-backend/
-├── __pycache__/                 # Compiled Python cache
-├── config/                      # Configuration files (if used)
-├── instance/
-│   └── styleflex.db             # SQLite database file (local)
-├── migrations/                 # Alembic migrations
-│   ├── versions/                # Auto-generated migration scripts
-│   ├── alembic.ini              # Alembic config
-│   ├── env.py
-│   └── script.py.mako
-├── routes/                      # Flask Blueprints for different routes
+├── app.py                       # App entry point
+├── database.py                  # SQLAlchemy setup
+├── models.py                    # Database models
+├── utils.py                     # Helper functions (e.g., decorators)
+├── routes/                      # Flask blueprints
 │   ├── __init__.py
 │   ├── auth_routes.py
 │   ├── design_routes.py
 │   └── order_routes.py
-├── venv/                        # Python virtual environment
-├── .env                         # Environment variables
-├── app.py                       # App entry point
-├── database.py                  # Database setup logic
-├── init_db.py                   # Initial database setup
-├── models.py                    # SQLAlchemy models
-├── Procfile                     # For deploying to Render
-├── README.md                    # Project documentation
+├── migrations/                  # Flask-Migrate files
+│   └── versions/
+├── seed.py                      # Seed data script
+├── seed_admin.py                # Seed admin account
+├── init_db.py                   # Optional database init script
+├── .env                         # Environment variables (not committed)
 ├── requirements.txt             # Python dependencies
-├── routes.py                    # Optional unified route registration
-├── seed.py                      # Script to seed data
-├── seed_admin.py                # Admin seeding script
-├── styleflex.db                 # (Duplicate?) DB file — cleanup if needed
-└── utils.py                     # Helper functions
+├── Procfile                     # For Render deployment
+├── README.md                    # Project documentation
+└── venv/                        # Virtual environment (excluded in .gitignore)
 
-
-
-
+```
+## LICENESE
+MIT 
+### ACKNOWLEDGEMENTS
+```
+- ELAINE BUYEKE
+- STACEY TAREI
+- LEWIS NJUMA
+- BILLADAMS NYAMWENO

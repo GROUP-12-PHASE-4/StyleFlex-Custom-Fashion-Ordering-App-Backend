@@ -15,9 +15,9 @@ def seed_admin():
             admin.set_password("admin123")
             db.session.add(admin)
             db.session.commit()
-            print("✅ Admin user created")
+            print("Admin user created")
         else:
-            print("⚠️ Admin already exists")
+            print("Admin already exists")
 
 if __name__ == "__main__":
     seed_admin()

@@ -12,9 +12,6 @@ from flask_cors import cross_origin
 auth_bp = Blueprint('auth', __name__)
 ALLOWED_ORIGINS = ["http://localhost:3000", "https://styleflex-frontend.vercel.app"]
 
-# ======================
-# Register
-# ======================
 @auth_bp.route('/register', methods=['POST', 'OPTIONS'])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def register():
@@ -34,9 +31,7 @@ def register():
 
     return jsonify({"message": "User registered successfully"}), 201
 
-# ======================
-# Login
-# ======================
+
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 def login():
@@ -57,9 +52,7 @@ def login():
 
     return jsonify({"message": "Invalid credentials"}), 401
 
-# ======================
-# Refresh Token
-# ======================
+
 @auth_bp.route('/refresh', methods=['POST', 'OPTIONS'])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required(refresh=True)
@@ -71,9 +64,7 @@ def refresh():
     new_access_token = create_access_token(identity=identity)
     return jsonify(access_token=new_access_token), 200
 
-# ======================
-# Get Profile
-# ======================
+
 @auth_bp.route('/profile', methods=['GET', 'OPTIONS'])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
@@ -92,9 +83,7 @@ def profile():
         "email": user.email
     }), 200
 
-# ======================
-# Update Profile
-# ======================
+
 @auth_bp.route('/profile', methods=['PUT', 'OPTIONS'])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
