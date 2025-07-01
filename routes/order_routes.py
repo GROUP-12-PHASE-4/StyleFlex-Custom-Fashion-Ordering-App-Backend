@@ -10,9 +10,9 @@ order_bp = Blueprint("order_bp", __name__)
 ALLOWED_ORIGINS = ["http://localhost:3000", "https://styleflex-frontend.vercel.app"]
 
 # ==========================
-# /orders (GET, POST, OPTIONS)
+# /api/orders (GET, POST, OPTIONS)
 # ==========================
-@order_bp.route("/orders", methods=["OPTIONS", "GET", "POST"])
+@order_bp.route("/", methods=["OPTIONS", "GET", "POST"])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required(optional=True)
 def orders_handler():
@@ -41,9 +41,9 @@ def orders_handler():
         return jsonify(new_order.to_dict()), 201
 
 # ==========================
-# /orders/<id> (PUT, DELETE, OPTIONS)
+# /api/orders/<id> (PUT, DELETE, OPTIONS)
 # ==========================
-@order_bp.route("/orders/<int:id>", methods=["OPTIONS", "PUT", "DELETE"])
+@order_bp.route("/<int:id>", methods=["OPTIONS", "PUT", "DELETE"])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 @admin_required
@@ -65,9 +65,9 @@ def order_admin_actions(id):
         return jsonify({"message": "Order deleted"}), 200
 
 # ==========================
-# /orders/<id>/offer (POST, OPTIONS)
+# /api/orders/<id>/offer (POST, OPTIONS)
 # ==========================
-@order_bp.route("/orders/<int:id>/offer", methods=["OPTIONS", "POST"])
+@order_bp.route("/<int:id>/offer", methods=["OPTIONS", "POST"])
 @cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 def make_offer(id):
