@@ -93,5 +93,5 @@ def make_offer(id):
 
     return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
 
-# Export for app use
+# Export blueprint
 orders_bp = order_bp
