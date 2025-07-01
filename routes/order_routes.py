@@ -7,23 +7,25 @@ from utils import admin_required
 import json
 
 order_bp = Blueprint("order_bp", __name__)
+ALLOWED_ORIGINS = ["http://localhost:3000", "https://styleflex-frontend.vercel.app"]
 
-# GET and POST (with OPTIONS) at /api/orders
-@order_bp.route("/", methods=["GET", "POST", "OPTIONS"])
-@cross_origin()
+# ==========================
+# /orders (GET, POST, OPTIONS)
+# ==========================
+@order_bp.route("/orders", methods=["OPTIONS", "GET", "POST"])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required(optional=True)
 def orders_handler():
     if request.method == "OPTIONS":
         return '', 200
 
     current_user_id = get_jwt_identity()
+    if not current_user_id:
+        return jsonify({"message": "Unauthorized"}), 401
 
     if request.method == "GET":
         user = User.query.get_or_404(current_user_id)
-        if user.is_admin:
-            orders = Order.query.all()
-        else:
-            orders = Order.query.filter_by(user_id=current_user_id).all()
+        orders = Order.query.all() if user.is_admin else Order.query.filter_by(user_id=current_user_id).all()
         return jsonify([order.to_dict() for order in orders]), 200
 
     if request.method == "POST":
@@ -38,12 +40,14 @@ def orders_handler():
         db.session.commit()
         return jsonify(new_order.to_dict()), 201
 
-# PUT and DELETE on /api/orders/<id>
-@order_bp.route("/<int:id>", methods=["PUT", "DELETE", "OPTIONS"])
-@cross_origin()
+# ==========================
+# /orders/<id> (PUT, DELETE, OPTIONS)
+# ==========================
+@order_bp.route("/orders/<int:id>", methods=["OPTIONS", "PUT", "DELETE"])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 @admin_required
-def modify_order(id):
+def order_admin_actions(id):
     if request.method == "OPTIONS":
         return '', 200
 
@@ -60,9 +64,11 @@ def modify_order(id):
         db.session.commit()
         return jsonify({"message": "Order deleted"}), 200
 
-# POST offer at /api/orders/<id>/offer
-@order_bp.route("/<int:id>/offer", methods=["POST", "OPTIONS"])
-@cross_origin()
+# ==========================
+# /orders/<id>/offer (POST, OPTIONS)
+# ==========================
+@order_bp.route("/orders/<int:id>/offer", methods=["OPTIONS", "POST"])
+@cross_origin(origins=ALLOWED_ORIGINS, supports_credentials=True)
 @jwt_required()
 def make_offer(id):
     if request.method == "OPTIONS":
@@ -87,5 +93,5 @@ def make_offer(id):
 
     return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
 
-# Export
+# Export for app use
 orders_bp = order_bp

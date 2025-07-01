@@ -21,13 +21,11 @@ CORS(
         "http://localhost:3000",
         "https://styleflex-frontend.vercel.app"
     ]}},
-    supports_credentials=True,
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"]
+    supports_credentials=True
 )
 print("✅ CORS initialized")
 
-# ✅ Apply global CORS headers for all responses
+# ✅ Global CORS headers for all responses
 @app.after_request
 def apply_cors_headers(response):
     origin = request.headers.get("Origin")
@@ -38,25 +36,20 @@ def apply_cors_headers(response):
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response
 
-# ✅ Handle OPTIONS preflight requests explicitly
+# ✅ Preflight support to avoid 405s
 @app.route('/api/<path:path>', methods=["OPTIONS"])
 def handle_options(path):
     return '', 200
 
+# ✅ Initialize database and extensions
 db.init_app(app)
-print("✅ Database initialized")
-
 migrate = Migrate(app, db)
-print("✅ Migrations setup")
-
 JWTManager(app)
-print("✅ JWT Manager setup")
 
-# ✅ Register blueprints
+# ✅ Register blueprints with correct prefixes
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(designs_bp, url_prefix="/api/designs")
 app.register_blueprint(orders_bp, url_prefix="/api/orders")
-print("✅ Blueprints registered")
 
 @app.route("/")
 def index():
