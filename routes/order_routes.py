@@ -8,8 +8,8 @@ import json
 
 order_bp = Blueprint("order_bp", __name__)
 
-# GET and POST (with OPTIONS support) in one route
-@order_bp.route("/orders", methods=["GET", "POST", "OPTIONS"])
+# GET and POST (with OPTIONS) at /api/orders
+@order_bp.route("/", methods=["GET", "POST", "OPTIONS"])
 @cross_origin()
 @jwt_required(optional=True)
 def orders_handler():
@@ -38,37 +38,30 @@ def orders_handler():
         db.session.commit()
         return jsonify(new_order.to_dict()), 201
 
-# PUT and OPTIONS
-@order_bp.route("/orders/<int:id>", methods=["PUT", "OPTIONS"])
+# PUT and DELETE on /api/orders/<id>
+@order_bp.route("/<int:id>", methods=["PUT", "DELETE", "OPTIONS"])
 @cross_origin()
 @jwt_required()
 @admin_required
-def update_order(id):
+def modify_order(id):
     if request.method == "OPTIONS":
         return '', 200
 
     order = Order.query.get_or_404(id)
-    data = request.get_json()
-    order.status = data.get("status", order.status)
-    db.session.commit()
-    return jsonify(order.to_dict()), 200
 
-# DELETE and OPTIONS
-@order_bp.route("/orders/<int:id>", methods=["DELETE", "OPTIONS"])
-@cross_origin()
-@jwt_required()
-@admin_required
-def delete_order(id):
-    if request.method == "OPTIONS":
-        return '', 200
+    if request.method == "PUT":
+        data = request.get_json()
+        order.status = data.get("status", order.status)
+        db.session.commit()
+        return jsonify(order.to_dict()), 200
 
-    order = Order.query.get_or_404(id)
-    db.session.delete(order)
-    db.session.commit()
-    return jsonify({"message": "Order deleted"}), 200
+    if request.method == "DELETE":
+        db.session.delete(order)
+        db.session.commit()
+        return jsonify({"message": "Order deleted"}), 200
 
-# OFFER POST and OPTIONS
-@order_bp.route("/orders/<int:id>/offer", methods=["POST", "OPTIONS"])
+# POST offer at /api/orders/<id>/offer
+@order_bp.route("/<int:id>/offer", methods=["POST", "OPTIONS"])
 @cross_origin()
 @jwt_required()
 def make_offer(id):
@@ -94,5 +87,5 @@ def make_offer(id):
 
     return jsonify({"message": "Offer made successfully", "offer": offer_data}), 200
 
-# Export for app
+# Export
 orders_bp = order_bp
